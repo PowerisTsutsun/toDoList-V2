@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+    <!-- THIS IS THE FIX: The missing overlay element -->
+    <div id="app-overlay"></div>
+
+    <div class="app-container">
+        <!-- This container will hold all switchable views -->
+        <div id="views-container">
+
+            <!-- HOME VIEW (Visible by default) -->
+            <div id="home-view" class="view active-view">
+                <header class="card">
+                    <div class="icon-bg"><i class="fas fa-rocket"></i></div>
+                    <div>
+                        <h1 id="user-greeting">Hello, Power</h1>
+                        <p>Welcome back</p>
+                    </div>
+                </header>
+                <section class="tile-container">
+                    <div class="tile accent-pink"><p>Due Today</p><h2 id="due-today-count">0</h2></div>
+                    <div class="tile accent-yellow"><p>Today</p><h2 id="current-date">-- ---</h2></div>
+                </section>
+                <main class="card">
+                    <div class="card-header">
+                        <div class="icon-bg list-icon"><i class="fas fa-list-check"></i></div>
+                        <h3>Tasks</h3>
+                    </div>
+                    <div class="input-area">
+                        <input type="text" id="task-input" placeholder="Add a new task..." aria-label="New task input">
+                        <input type="date" id="date-input" aria-label="Due date">
+                        <select id="priority-select" aria-label="Priority">
+                            <option value="Normal">Normal</option><option value="Medium">Medium</option><option value="High">High</option>
+                        </select>
+                        <button id="add-task-btn" class="primary-btn">Add Task</button>
+                    </div>
+                    <div class="task-list-controls"><button id="clear-completed-btn">Clear Completed</button></div>
+                    <div id="task-list-container"></div>
+                </main>
+            </div>
+
+            <!-- TIMER VIEW (Hidden by default) -->
+            <div id="timer-view" class="view">
+                <div class="card text-center">
+                    <div class="card-header">
+                        <div class="icon-bg"><i class="fas fa-clock"></i></div>
+                        <h3>Pomodoro Timer</h3>
+                    </div>
+                    <div id="timer-display" class="timer-display">25:00</div>
+                    <div class="timer-duration-control">
+                        <label for="duration-input">Duration (min):</label>
+                        <input type="number" id="duration-input" value="25">
+                    </div>
+                    <div class="timer-controls">
+                        <button id="timer-start-btn" class="primary-btn">Start</button>
+                        <button id="timer-pause-btn">Pause</button>
+                        <button id="timer-reset-btn">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS VIEW (Hidden by default) -->
+            <div id="settings-view" class="view">
+                 <div class="card">
+                    <div class="card-header"><div class="icon-bg"><i class="fas fa-cog"></i></div><h3>Settings</h3></div>
+                    <div class="setting-item">
+                        <label for="username-input">Username</label>
+                        <input type="text" id="username-input" placeholder="Enter your name">
+                    </div>
+                    <div class="setting-item">
+                        <label for="theme-select">Theme</label>
+                        <select id="theme-select">
+                            <option value="dark">Dark</option>
+                            <option value="light">Light</option>
+                            <option value="green-forest">Green Forest</option>
+                            <option value="ocean-vibe">Ocean Vibe</option>
+                            <option value="beach-love">Beach Love</option>
+                        </select>
+                    </div>
+
+                    <!-- Custom Background (URL) -->
+                    <div class="setting-item">
+                    <label for="bg-url">Background URL</label>
+                        <div style="display:flex; gap:8px;">
+                            <input id="bg-url" type="url" placeholder="https://example.com/image.jpg" style="min-width:260px;">
+                            <button id="bg-apply-url" class="btn btn-success btn-sm">Apply</button>
+                            <button id="bg-clear" class="btn btn-outline btn-sm">Clear</button>
+                        </div>
+                    </div>
+
+
+                    <div class="setting-item">
+                    <label></label>
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <span class="subtle" style="width:60px;">Overlay</span>
+                        <input id="bg-overlay" type="range" min="0" max="90" value="45">
+                        <span class="subtle" style="width:40px;" id="bg-overlay-val">45%</span>
+
+                        <span class="subtle" style="width:40px;margin-left:16px;">Blur</span>
+                        <input id="bg-blur" type="range" min="0" max="10" value="0">
+                        <span class="subtle" style="width:28px;" id="bg-blur-val">0</span>
+                    </div>
+                    </div>
+
+                 </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <nav>
+            <button data-view="home" class="active"><i class="fas fa-home"></i> Home</button>
+            <button data-view="timer"><i class="fas fa-clock"></i> Timer</button>
+            <button id="nav-add-btn" class="nav-add-btn">+</button>
+            <button data-view="settings"><i class="fas fa-cog"></i> Settings</button>
+        </nav>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
+
