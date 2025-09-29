@@ -1,6 +1,7 @@
-// main.js (updated)
+// main.js
+
 document.addEventListener('DOMContentLoaded', () => {
-  // --- References ---
+  // ===== Element References =====
   const userGreetingElem   = document.getElementById('user-greeting');
   const dueTodayCountElem  = document.getElementById('due-today-count');
   const currentDateElem    = document.getElementById('current-date');
@@ -19,14 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const themeSelect        = document.getElementById('theme-select');
   const usernameInput      = document.getElementById('username-input');
 
-  // Timer refs
+  // Timer elements
   const timerDisplay       = document.getElementById('timer-display');
   const durationInput      = document.getElementById('duration-input');
   const timerStartBtn      = document.getElementById('timer-start-btn');
   const timerPauseBtn      = document.getElementById('timer-pause-btn');
   const timerResetBtn      = document.getElementById('timer-reset-btn');
   
-  // --- NEW: Background Setting References ---
+  // Background controls
   const bgUrlInput       = document.getElementById('bg-url');
   const bgApplyBtn       = document.getElementById('bg-apply-url');
   const bgClearBtn       = document.getElementById('bg-clear');
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const bgOverlayValue   = document.getElementById('bg-overlay-val');
   const bgBlurValue      = document.getElementById('bg-blur-val');
 
-  // --- LocalStorage Keys ---
+  // ===== LocalStorage Keys =====
   const LS_TASKS     = 'todo.tasks';
   const LS_THEME     = 'todo.theme';
   const LS_USERNAME  = 'todo.username';
@@ -44,14 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const LS_BG_OVERLAY = 'todo.bgOverlay';
   const LS_BG_BLUR    = 'todo.bgBlur';
 
-  // --- Helpers ---
+  // ===== Helpers =====
   const loadTasks = () => JSON.parse(localStorage.getItem(LS_TASKS) || '[]');
   const saveTasks = (tasks) => localStorage.setItem(LS_TASKS, JSON.stringify(tasks));
 
-  // Utility to generate ids
+  // Unique ID generator
   const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
 
-  // --- View Switching (No changes needed here) ---
+  // ===== View Switching =====
   const switchView = (viewId) => {
     views.forEach(v => v.classList.remove('active-view'));
     const target = document.getElementById(viewId + '-view');
@@ -66,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Settings (Username & Theme) ---
+  // ===== Settings: Username & Theme =====
   const applySettings = () => {
     const theme = localStorage.getItem(LS_THEME) || 'dark';
     const username = localStorage.getItem(LS_USERNAME) || 'Power';
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // --- NEW: Custom Background Functionality ---
+  // ===== Appearance: Background URL / Overlay / Blur =====
   const applyAppearance = () => {
     const url     = localStorage.getItem(LS_BG_IMG);
     const overlay = parseFloat(localStorage.getItem(LS_BG_OVERLAY) ?? '0.45');
@@ -99,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.style.setProperty('--bg-overlay', `rgba(0,0,0,${overlay})`);
     document.documentElement.style.setProperty('--bg-blur', `${blur}px`);
 
-    // Update the UI controls to reflect the current state
+    // Sync UI controls with current values
     if (bgUrlInput) bgUrlInput.value = url || '';
     if (bgOverlaySlider) {
         bgOverlaySlider.value = Math.round(overlay * 100);
@@ -111,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Event listener for the "Apply" button
+  // Apply background URL
   if (bgApplyBtn) {
     bgApplyBtn.addEventListener('click', () => {
       const url = (bgUrlInput.value || '').trim();
@@ -124,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // Event listener for the "Clear" button
+  // Clear background
   if (bgClearBtn) {
     bgClearBtn.addEventListener('click', () => {
         localStorage.removeItem(LS_BG_IMG);
@@ -132,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Event listener for the Overlay slider
+  // Overlay slider
   if (bgOverlaySlider) {
     bgOverlaySlider.addEventListener('input', () => {
         const overlayValue = bgOverlaySlider.value / 100;
@@ -141,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // Event listener for the Blur slider
+  // Blur slider
   if (bgBlurSlider) {
     bgBlurSlider.addEventListener('input', () => {
         const blurValue = bgBlurSlider.value;
@@ -150,8 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // --- TASKS: model + rendering + actions ---
-  // Normalize priority values coming from the select / old storage
+  // ===== Tasks: Model, Render, Actions =====
+  // Normalize priority values from UI/old storage
   const normalizePriority = (val) => {
     const v = String(val || 'normal').toLowerCase();
     if (v === 'low' || v === 'none') return 'normal';
@@ -193,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const renderTasks = () => {
     if (!taskListContainer) return;
     const tasks = loadTasks();
-    // Sort: incomplete first, then by due date (empty last), then recent created last
+    // Sort: undone first → by due date (empty last) → by creation time
     tasks.sort((a, b) => {
       if (a.done !== b.done) return a.done ? 1 : -1;
       if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
@@ -224,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dateInput) dateInput.value = '';
     if (prioritySelect) prioritySelect.value = 'normal';
     
-  // Migrate any stored tasks with inconsistent priority casing/labels
+  // One-time migration to normalize priority labels in stored tasks
   (function migratePriorityOnce(){
     const tasks = loadTasks();
     let changed = false;
@@ -243,8 +244,9 @@ document.addEventListener('DOMContentLoaded', () => {
     taskInput.focus();
   };
 
-  // Bind add button + Enter key
+  // ===== UI Enhancements & Event Bindings =====
 
+  // Timer buttons: ensure they use the shared button styles
   if (timerStartBtn) {
     timerStartBtn.classList.add('btn','btn-primary','btn-lg');
   }
@@ -255,21 +257,21 @@ document.addEventListener('DOMContentLoaded', () => {
     timerResetBtn.classList.add('btn','btn-primary','btn-lg');
   }
 
-  // Insert tiny tip under the Custom Background URL field, if present
+  // Tiny tip under Background URL input
   if (bgUrlInput && !document.getElementById('bg-tip-note')) {
     const tip = document.createElement('small');
     tip.id = 'bg-tip-note';
     tip.className = 'tip-muted';
     tip.textContent = 'Tip: For best results, use 1920 × 1080 px images.';
-    // Try to place right after the input
     if (bgUrlInput.parentElement) {
       bgUrlInput.parentElement.appendChild(tip);
     } else {
       bgUrlInput.insertAdjacentElement('afterend', tip);
     }
   }
+
+  // Add Task button + Enter key
   if (addTaskBtn) {
-    // Ensure it looks like the rest of your button system
     addTaskBtn.classList.add('btn', 'btn-primary', 'btn-lg');
     addTaskBtn.addEventListener('click', addTask);
   }
@@ -282,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Delegate clicks for toggle/delete
+  // Task list: toggle complete / delete (event delegation)
   if (taskListContainer) {
     taskListContainer.addEventListener('click', (e) => {
       const target = e.target;
@@ -307,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Clear completed
+  // Clear completed tasks
   if (clearCompletedBtn) {
     clearCompletedBtn.addEventListener('click', () => {
       const tasks = loadTasks().filter(t => !t.done);
@@ -317,11 +319,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // --- Timer (with persistence) ---
+  // ===== Timer (with persistence) =====
   const initMin = parseInt(localStorage.getItem(LS_TIMER_MIN) || (durationInput?.value || '25'), 10);
   let secondsRemaining = (isNaN(initMin) ? 25 : initMin) * 60;
   let timerInterval = null;
   let isTimerRunning = false;
+
   const updateTimerDisplay = () => {
       if (!timerDisplay) return;
       const m = Math.floor(secondsRemaining / 60);
@@ -357,9 +360,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (timerPauseBtn) timerPauseBtn.addEventListener('click', pauseTimer);
   if (timerResetBtn) timerResetBtn.addEventListener('click', resetTimer);
 
-  // --- Init ---
+  // ===== Init =====
   applySettings();
-  applyAppearance(); // Load saved background on startup
+  applyAppearance();
   switchView('home');
   renderTasks();
   updateDashboard();
